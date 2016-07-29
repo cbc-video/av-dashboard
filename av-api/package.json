@@ -1,7 +1,7 @@
 {
-  "name": "av-dashboard",
+  "name": "av-api",
   "version": "1.0.0",
-  "description": "AV dashboard to control ptzoptics cameras, bmd tv studio switcher, and wirecast",
+  "description": "AV api for dashboard to control ptzoptics cameras, bmd tv studio switcher, and wirecast",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
