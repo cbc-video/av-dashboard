@@ -24,6 +24,7 @@
   "homepage": "https://github.com/cbc-video/av-dashboard",
   "dependencies": {
     "atem": "^0.1.7",
-    "hapi": "^14.0.0"
+    "hapi": "^14.0.0",
+    "ipcam-controller": "^1.0.5"
   }
 }
