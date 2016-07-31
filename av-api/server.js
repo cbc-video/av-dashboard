@@ -4,34 +4,16 @@
 'use strict';
 
 const Hapi = require('hapi'); //for REST api endpoints
+const Good = require('good');
 const Atem = require('atem'); //for ATEM TV Studio control
 const IPCamController = require('ipcam-controller'); //for PTZOptics camera controls
-const Edge = require('edge'); //for .Net OLE WireCast API
+const Wirecast = require('./wirecast.js');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
 server.connection({
     host: 'localhost',
     port: 8000
-});
-
-var helloWorld = Edge.func(function () {/*
- async (input) => {
-    return ".NET Welcomes " + input.ToString();
- }
-*/});
-
-// Add the route
-server.route({
-    method: 'GET',
-    path: '/hello',
-    handler: function (request, reply) {
-
-        helloWorld('JavaScript', function (error, result) {
-            if (error) throw error;
-            return reply({message:'hello world '+result});
-        });
-    }
 });
 
 server.route({
@@ -58,24 +40,46 @@ server.route({
     method: 'GET',
     path: '/stream',
     handler: function (request, reply) {
-        return reply({on:true,health:.5,cpu:.2});
+        return reply(Wirecast.wirecast);
     }
 });
 
 server.route({
-    method: 'GET',
-    path: '/recording',
+    method: 'POST',
+    path: '/stream',
     handler: function (request, reply) {
-        return reply({on:false});
+        Wirecast.set(request.payload, function(error){
+            if(error) throw error;
+            return reply(Wirecast.wirecast);
+        });
     }
-})
+});
+
+server.register({
+    register: Good,
+    options: {
+        reporters: {
+            console: [{
+                module: 'good-squeeze',
+                name: 'Squeeze',
+                args: [{
+                    response: '*',
+                    log: '*'
+                }]
+            }, {
+                module: 'good-console'
+            }, 'stdout']
+        }
+    }
+}, (error) => {
+    if (error) throw error; // something bad happened loading the plugin
+});
 
 // Start the server
-server.start((err) => {
-
-    if (err) {
-        throw err;
-    }
+server.start((error) => {
+    if (error) throw error;
+    setInterval(Wirecast.update, 5000);
+    Wirecast.update();
     console.log('Server running at:', server.info.uri);
 });
 
