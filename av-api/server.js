@@ -5,9 +5,10 @@
 
 const Hapi = require('hapi'); //for REST api endpoints
 const Good = require('good');
-const Atem = require('atem'); //for ATEM TV Studio control
-const IPCamController = require('ipcam-controller'); //for PTZOptics camera controls
+
 const Wirecast = require('./wirecast.js');
+const Camera = require('./camera.js');
+const Switcher = require('./switcher.js');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -78,7 +79,7 @@ server.register({
 // Start the server
 server.start((error) => {
     if (error) throw error;
-    setInterval(Wirecast.update, 5000);
+    setInterval(Wirecast.update, 2000);
     Wirecast.update();
     console.log('Server running at:', server.info.uri);
 });
