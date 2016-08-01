@@ -21,7 +21,18 @@ server.route({
     method: 'GET',
     path: '/switcher',
     handler: function (request, reply) {
-        return reply({preview:1,program:2});
+        return reply(Switcher.switcher.state);
+    }
+});
+
+server.route({
+    method: 'POST',
+    path: '/switcher',
+    handler: function (request, reply) {
+        Switcher.set(request.payload, function(error){
+            if(error) throw error;
+            return reply(Switcher.switcher.state);
+        });
     }
 });
 
@@ -81,6 +92,7 @@ server.start((error) => {
     if (error) throw error;
     setInterval(Wirecast.update, 2000);
     Wirecast.update();
+    Switcher.init(function(error,state){},function(error,state){});
     console.log('Server running at:', server.info.uri);
 });
 
